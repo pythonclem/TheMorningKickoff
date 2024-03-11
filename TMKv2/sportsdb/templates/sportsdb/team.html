@@ -1,0 +1,13 @@
+{% extends "main.html" %}
+{% block content %}
+
+<h1>{{team.teamname}}</h1>
+<p>{{team.teamdescription}}</p>
+<p>Stadium: {{team.teamstadium}}</p>
+
+<h2>Matches</h2>
+{% for match in matches %}
+<li>{{match.matchteams}}, {{match.league}}, {{match.date}}, {{match.venue}}</a></li>
+{% endfor %}
+
+{% endblock content %}
