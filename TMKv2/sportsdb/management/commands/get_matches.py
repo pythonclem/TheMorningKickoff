@@ -13,43 +13,47 @@ def getMatches(id: int):
     print(f"Getting matches for {id}, {season}")
     response = requests.get(f"https://www.thesportsdb.com/api/v1/json/{env("API_KEY")}/eventsseason.php?id={id}&s={season}")
     data = response.json()
-    entries = len(data.get("events", []))
-    for x in range(entries):
-            currentMatch = response.json()['events'][x]
+    print(f"{len(data.get("events", []))} matches to add")
+    for match in data.get("events", []):
+        try:
+            if Match.objects.get(matchid = match['idEvent']):
+                print(f"{match['strEvent']} already in DB")
+        except:
             instance = Match(
-            matchid=currentMatch['idEvent'],
-            matchteams=currentMatch['strEvent'],
-            league=currentMatch['strLeague'],
-            matchday=currentMatch['intRound'],
-            hometeam=currentMatch['strHomeTeam'],
-            awayteam=currentMatch['strAwayTeam'],
-            homescore=currentMatch['intHomeScore'],
-            awayscore=currentMatch['intAwayScore'],
-            season=currentMatch['strSeason'],
-            date=currentMatch['dateEvent'],
-            time=currentMatch['strTime'],
-            venue=currentMatch['strVenue'],
-            badge=currentMatch['strSquare'],
-            video=currentMatch['strVideo']
+            matchid=match['idEvent'],
+            matchteams=match['strEvent'],
+            league=match['strLeague'],
+            matchday=match['intRound'],
+            hometeam=match['strHomeTeam'],
+            awayteam=match['strAwayTeam'],
+            homescore=match['intHomeScore'],
+            awayscore=match['intAwayScore'],
+            season=match['strSeason'],
+            date=match['dateEvent'],
+            time=match['strTime'],
+            venue=match['strVenue'],
+            badge=match['strSquare'],
+            video=match['strVideo']
             )
             instance.leagueid = league_instance
             try:
-                instance.hometeamid = Team.objects.get(teamid = currentMatch['idHomeTeam'])
+                instance.hometeamid = Team.objects.get(teamid = match['idHomeTeam'])
             except:
-                 problemid = currentMatch['idHomeTeam']
+                 problemid = match['idHomeTeam']
                  teamData(problemid)
-                 instance.hometeamid = Team.objects.get(teamid = currentMatch['idHomeTeam'])
+                 instance.hometeamid = Team.objects.get(teamid = match['idHomeTeam'])
             try:
-                instance.awayteamid = Team.objects.get(teamid = currentMatch['idAwayTeam'])
+                instance.awayteamid = Team.objects.get(teamid = match['idAwayTeam'])
             except:
-                 problemid = currentMatch['idAwayTeam']
+                 problemid = match['idAwayTeam']
                  teamData(problemid)
-                 instance.awayteamid = Team.objects.get(teamid = currentMatch['idAwayTeam'])
+                 instance.awayteamid = Team.objects.get(teamid = match['idAwayTeam'])
 
             instance.save()
-            print(f"{x}/{entries} done")
+            print(f"{instance} added to DB")
     
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        getMatches(4328)
+        getMatches(4337)

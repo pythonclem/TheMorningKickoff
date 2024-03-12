@@ -13,4 +13,4 @@ def add_leagues_and_teams(leagueid):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        add_leagues_and_teams(4332)
+        add_leagues_and_teams(4344)

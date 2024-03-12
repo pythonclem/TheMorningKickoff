@@ -46,4 +46,4 @@ def teamsData(league_id_to_add: int):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        teamsData(4334)
+        teamsData(4344)
