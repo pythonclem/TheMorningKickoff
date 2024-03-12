@@ -5,3 +5,4 @@ db.sqlite3
 *.env
 .vscode
 *.venv
+TMKv2\sportsdb\management\commands\sandbox.py

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'sportsdb.apps.SportsdbConfig',
+    'users.apps.UsersConfig',
     'django_extensions',
     'rest_framework',
 ]
