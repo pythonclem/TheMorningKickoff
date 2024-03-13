@@ -1,2 +1,8 @@
-<h1>Logo</h1>
+<h1>TMK</h1>
+{% if request.user.is_authenticated %}
+<p> You are logged in</p> <a href="{% url 'logout' %}">Log Out</a>
+{% else %}
+<a href="{% url 'login' %}">Login</a>
+{% endif %}
 <hr>
+<br>
