@@ -119,7 +119,6 @@ def sortedMatchScores(startdate, enddate):
         else:
             matchscore = round((hometeamscore*0.3 + awayteamscore*0.7), 1)
             match_scores.append((game, matchscore))
-    
     sorted_matches = sorted(match_scores, key=lambda x: -x[1])
     for game, matchscore in sorted_matches:
         print(f"{matchscore}: {game.hometeam} - {game.awayteam}")
@@ -129,8 +128,9 @@ def getMatchesfromDB(leagueid, startdate, enddate):
     for game in matches:
         print(game)
 
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        sortedMatchScores('2024-03-15', '2024-03-18')
+        sortedMatchScores('2024-03-01', '2024-03-31')
 
 
