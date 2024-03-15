@@ -1,9 +1,10 @@
-from .get_email_data import usersAndTeams, generateEmailData, generate_html_block 
+from .get_email_data import usersAndTeams, generateEmailData 
+from .email_renderer import generateHTML 
 from .mailjet import sendEmail
 
 def sendEmails():
     usersandteams = usersAndTeams()
     for user in usersandteams:
         emaildata = generateEmailData(user, usersandteams)
-        generate_html_block(emaildata['matches'])
+        generateHTML(emaildata['matches'])
         sendEmail(emaildata['userinfo']['email'])

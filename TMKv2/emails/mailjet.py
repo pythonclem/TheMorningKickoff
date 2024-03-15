@@ -1,7 +1,6 @@
 import environ
 env = environ.Env()
 environ.Env.read_env("TMKv2\\TMKv2\\.env")
-from django.core.management.base import BaseCommand
 from mailjet_rest import Client
 
 API_KEY = env("MAILJET_API")
@@ -14,17 +13,12 @@ def sendEmail(email):
         html_content = file.read()
     data = {
   'FromEmail': 'c.thibault16@gmail.com',
-  'FromName': 'Mailjet Pilot',
-  'Subject': 'Your email flight plan!',
-  'Text-part': 'Dear passenger, welcome to Mailjet! May the delivery force be with you!',
+  'FromName': 'TMK Matches',
+  'Subject': "Your Teams' Matches This Week",
+  'Text-part': 'Who are your teams playing this week?',
   'Html-part': html_content,
   'To': str(email),
             }
     result = mailjet.send.create(data=data)
 
     print(result)
-
-
-class Command(BaseCommand):
-    def handle(self, *args, **options):
-        sendEmail()

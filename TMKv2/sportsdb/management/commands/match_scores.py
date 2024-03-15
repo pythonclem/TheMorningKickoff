@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from sportsdb.models import Match, League, Team, Standing
 from django.db.models import Q
-from datetime import datetime, timedelta
 import environ
 from django.db.models import Avg
 
