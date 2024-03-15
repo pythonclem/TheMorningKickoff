@@ -6,12 +6,16 @@ from datetime import datetime, timedelta
 
 def usersAndTeams():
     profiles = Profile.objects.all()
-    profileandteams = {}
+    usersandteams = {}
     for profile in profiles:
         teams = profile.teams.all()
         team_ids = [team.teamid for team in teams]
-        profileandteams[profile.id] = team_ids
-    return profileandteams
+        team_names = [team.teamname for team in teams]
+        usersandteams[profile.id] = {
+            'team_ids': team_ids,
+            'team_names': team_names
+        }
+    return usersandteams
 
 def getUserData(id):
     userinfo_queryset = Profile.objects.filter(id=id).values('name', 'email')
@@ -46,7 +50,9 @@ def addDataToMatches(matchlist: list):
 def generateEmailData(user, usersandteams):
     emaildata = {}
     emaildata['userinfo'] = getUserData(user)
-    userteamlist = usersandteams[user]
+    userteamlist = usersandteams[user]['team_ids']
+    userteamnames = usersandteams[user]['team_names']
+    emaildata['userteams'] = userteamnames
     matches = []
     for team in userteamlist:
         matchlist = weeklyMatchesByTeam(team)

@@ -6,5 +6,5 @@ def sendEmails():
     usersandteams = usersAndTeams()
     for user in usersandteams:
         emaildata = generateEmailData(user, usersandteams)
-        generateHTML(emaildata['matches'])
+        generateHTML(emaildata['matches'], emaildata['userinfo']['name'], emaildata['userteams'])
         sendEmail(emaildata['userinfo']['email'])

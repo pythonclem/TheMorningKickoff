@@ -21,4 +21,4 @@ def sendEmail(email):
             }
     result = mailjet.send.create(data=data)
 
-    print(result)
+    print("sent")
