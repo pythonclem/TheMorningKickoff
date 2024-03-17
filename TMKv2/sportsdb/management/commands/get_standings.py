@@ -41,4 +41,4 @@ def getStandings(id: int):
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        getStandings(4344)
+        getStandings(4328)

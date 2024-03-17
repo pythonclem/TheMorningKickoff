@@ -4,6 +4,7 @@ from users.models import Profile
 from django.db.models import Q
 from datetime import datetime, timedelta
 
+
 def usersAndTeams():
     profiles = Profile.objects.all()
     usersandteams = {}
@@ -26,7 +27,7 @@ def getUserData(id):
 
 def weeklyMatchesByTeam(teamid):
     tomorrow = datetime.now() + timedelta(days=1)
-    six_days_from_now = datetime.now() + timedelta(days=18)
+    six_days_from_now = datetime.now() + timedelta(days=7)
     matchlist = Match.objects.filter(Q(hometeamid=teamid) | Q(awayteamid=teamid), 
                                    date__range=[tomorrow, six_days_from_now]).values(
                                        'date', 'hometeam','hometeamid', 'awayteam', 'awayteamid', 'league', 'venue', 'time')
