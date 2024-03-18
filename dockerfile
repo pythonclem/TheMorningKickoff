@@ -14,3 +14,6 @@ RUN pip install -r requirements.txt
 
 # Copy project
 COPY . .
+
+ENV PYTHONPATH "${PYTHONPATH}:/app"
+ENV DJANGO_SETTINGS_MODULE=TMKv2.settings
