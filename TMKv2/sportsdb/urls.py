@@ -4,4 +4,5 @@ urlpatterns = [
     path('leagues/', views.leagues, name="leagues"),
     path('league/<str:pk>/', views.league, name="league"),
     path('team/<str:pk>/', views.team, name="team"),
+    path('addleague/', views.addLeague, name="addleague"),
 ]
