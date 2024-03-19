@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import TeamSerializer, UserSerializer
 from sportsdb.models import Team
+from users.models import Profile
 
 @api_view(['GET'])
 def getTeams(request):
@@ -18,9 +19,12 @@ def getTeam(request, pk):
 @api_view(['POST'])
 def createUser(request):
     try:
+        team_ids = request.data.pop('teams', [])
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            profile = Profile.objects.get(user=user)
+            profile.teams.set(team_ids)
             return Response({"message": "User created successfully"})
         else:
             return Response(serializer.errors)

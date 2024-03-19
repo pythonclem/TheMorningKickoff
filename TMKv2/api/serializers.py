@@ -11,10 +11,4 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'useremail', 'userteams']
-
-    def create(self, validated_data):
-        team_ids = validated_data.pop('userteams', []) 
-        user = User.objects.create(**validated_data)
-        user.userteams.set(team_ids)
-        return user
+        fields = ['username', 'email']
