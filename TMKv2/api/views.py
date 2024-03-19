@@ -1,8 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import TeamSerializer, UserSerializer
-from sportsdb.models import Team
+from .serializers import TeamSerializer, UserSerializer, MatchSerializer
+from sportsdb.models import Team, Match
 from users.models import Profile
+from datetime import date
+from django.db.models import Q
 
 @api_view(['GET'])
 def getTeams(request):
@@ -12,9 +14,21 @@ def getTeams(request):
 
 @api_view(['GET'])
 def getTeam(request, pk):
-    team = Team.objects.get(teamid = pk)
-    serializer = TeamSerializer(team, many=False)
-    return Response(serializer.data)
+    try:
+        team = Team.objects.get(teamid=pk)
+    except:
+        return Response({"error": "Team not found"}, status=404)
+    last_10_matches = Match.objects.filter(
+        (Q(hometeamid=pk) | Q(awayteamid=pk)) & Q(date__lt=date.today())
+        ).order_by('-date')[:10]
+
+    team_serializer = TeamSerializer(team, many=False)
+    matches_serializer = MatchSerializer(last_10_matches, many=True)
+    response_data = {
+        'team': team_serializer.data,
+        'last_10_matches': matches_serializer.data
+    }
+    return Response(response_data)
 
 @api_view(['POST'])
 def createUser(request):
