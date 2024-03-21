@@ -13,6 +13,12 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['username', 'email']
 
+    def validate_email(self, value):
+        value = serializers.EmailField().run_validation(value)
+        if User.objects.filter(email__iexact=value).exclude(pk=self.instance.pk if self.instance else None).exists():
+            raise serializers.ValidationError("This email is already in use.")
+        return value
+
 
 class MatchSerializer(serializers.ModelSerializer):
     class Meta:
