@@ -5,5 +5,5 @@ from . import views1
 urlpatterns = [
     path('teams/', views.getTeams),
     path('team/<str:pk>/', views.getTeam),
-    path('createuser/', views1.CreateUserView.as_view()) 
-]
+    path('users/', views1.UserView.as_view(), name='users'),
+    path('users/<int:pk>/', views1.UserView.as_view(), name='user_detail'),]
