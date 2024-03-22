@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username', 'email', 'first_name']
 
     def validate_email(self, value):
         value = serializers.EmailField().run_validation(value)
@@ -23,7 +23,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ['username', 'email', 'teams']
+        fields = ['username', 'name', 'email', 'teams']
 
 
 class MatchSerializer(serializers.ModelSerializer):
