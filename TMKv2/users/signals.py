@@ -6,7 +6,6 @@ from django.db.models.signals import post_save, post_delete
 @receiver(post_save, sender=User)
 def UserProfile(sender, instance, created, **kwargs):
     if created:
-        print("Creating New")
         user = instance
         profile = Profile.objects.create(
             user=user,
@@ -15,7 +14,6 @@ def UserProfile(sender, instance, created, **kwargs):
             name=user.first_name
             )
     else:
-        print("Updating Existing")
         profile = Profile.objects.get(user=instance)
         profile.username = instance.username
         profile.email = instance.email
