@@ -2,9 +2,9 @@ from django.db import transaction
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserSerializer, ProfileSerializer, TeamSerializer, MatchSerializer
+from .serializers import UserSerializer, ProfileSerializer, TeamSerializer, MatchSerializer, LeagueSerializer
 from users.models import Profile, User
-from sportsdb.models import Team, Match
+from sportsdb.models import Team, Match, League
 from datetime import date
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -13,11 +13,12 @@ class UserView(APIView):
 
     def get(self, request, pk=None, *args, **kwargs):
         if pk:
-            profile = Profile.objects.filter(id=pk).first()
-            if profile:
-                serializer = ProfileSerializer(profile)
-                return Response(serializer.data)
-            return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            try:
+                profile = Profile.objects.filter(id=pk).first()
+            except:
+                return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            serializer = ProfileSerializer(profile)
+            return Response(serializer.data)
         profiles = Profile.objects.all()
         serializer = ProfileSerializer(profiles, many=True)
         return Response(serializer.data)    
@@ -83,3 +84,17 @@ class TeamView(APIView):
             teams = Team.objects.filter(primaryleague__teamdata=True)
             serializer = TeamSerializer(teams, many=True)
             return Response(serializer.data)
+        
+
+class LeagueView(APIView):
+    def get(self, request, pk=None, *args, **kwargs):
+        if pk:
+            try:
+                league = League.objects.get(leagueid=pk)
+            except:
+                return Response({"message": "League not found"}, status=status.HTTP_404_NOT_FOUND)
+            serializer = LeagueSerializer(league)
+            return Response(serializer.data)
+        leagues = League.objects.all()
+        serializer = LeagueSerializer(leagues, many=True)
+        return Response(serializer.data)  

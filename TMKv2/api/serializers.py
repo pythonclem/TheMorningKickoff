@@ -30,3 +30,9 @@ class MatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Match
         fields = ['hometeam', 'awayteam', 'homescore', 'awayscore', 'league', 'date']
+
+
+class LeagueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = League
+        fields = ['leaguename', 'leaguedescription', 'leaguecountry', 'leaguesport', 'leaguebadge']
