@@ -8,6 +8,12 @@ from sportsdb.models import Team, Match, League
 from datetime import date
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+import requests
+from django.utils.timezone import now
+import environ
+env = environ.Env()
+environ.Env.read_env("TMKv2\\TMKv2\\.env")
+
 
 class UserView(APIView):
 
@@ -87,6 +93,7 @@ class TeamView(APIView):
         
 
 class LeagueView(APIView):
+    
     def get(self, request, pk=None, *args, **kwargs):
         if pk:
             try:
@@ -98,3 +105,36 @@ class LeagueView(APIView):
         leagues = League.objects.all()
         serializer = LeagueSerializer(leagues, many=True)
         return Response(serializer.data)  
+    
+
+
+class ScoreUpdaterView(APIView):
+
+    def put(self, request, *args, **kwargs):
+            
+        leagues = League.objects.filter(teamdata=True)
+        apiresponse = []
+
+        for league in leagues:
+            season = league.seasonformat
+            print(f"Getting matches for {league.leagueid}, {season}")
+            response = requests.get(f"https://www.thesportsdb.com/api/v1/json/{env("API_KEY")}/eventsseason.php?id={league.leagueid}&s={season}")
+            data = response.json()
+            matches_to_update = Match.objects.filter(leagueid=league, date__lt=now(), homescore__isnull=True)
+            print(f"Found {matches_to_update.count()} matches to update")
+            scores_to_update = []
+
+            for game in matches_to_update:
+                for match in data.get("events", []):
+                    if str(game.matchid) == match['idEvent']:
+                        game.homescore = match['intHomeScore']
+                        game.awayscore = match['intAwayScore']
+                        game.video = match['strVideo']
+                        scores_to_update.append(game)
+                        break
+
+            if scores_to_update:
+                with transaction.atomic():
+                    Match.objects.bulk_update(scores_to_update, ['homescore', 'awayscore', 'video'])
+                    apiresponse.append(f"Updated {len(scores_to_update)} matches for {league.leaguename}")
+        return Response({"message": apiresponse})
