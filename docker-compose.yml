@@ -8,6 +8,7 @@ services:
       - .:/app
     depends_on:
       - db
+    hostname: webservice
   db:
     image: postgres
     environment:
@@ -17,6 +18,11 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+
+  debug:
+    build: 
+      dockerfile: dockerfilecron
+
       
 volumes:
   db-data:

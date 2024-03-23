@@ -4,6 +4,8 @@ FROM python:3.12.2-slim-bullseye
 ENV PIP_DISABLE_PIP_VERSION_CHECK 1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH "${PYTHONPATH}:/app"
+ENV DJANGO_SETTINGS_MODULE=TMKv2.settings
 
 # Set work directory
 WORKDIR /app
@@ -14,6 +16,3 @@ RUN pip install -r requirements.txt
 
 # Copy project
 COPY . .
-
-ENV PYTHONPATH "${PYTHONPATH}:/app"
-ENV DJANGO_SETTINGS_MODULE=TMKv2.settings

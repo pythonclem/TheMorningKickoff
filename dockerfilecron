@@ -1,0 +1,13 @@
+# Dockerfile to create image with cron services
+FROM ubuntu:latest
+
+#Install Cron
+RUN apt-get update
+RUN apt-get -y install cron
+RUN apt-get -y install curl
+
+# Add the cron job
+RUN crontab -l | { cat; echo "* * * * * curl -X PUT http://webservice:8000/api/updatescores/"; } | crontab -
+
+# Run the command on container startup
+CMD ["cron", "-f"]

@@ -12,3 +12,4 @@ admin.site.register(League)
 admin.site.register(Team)
 admin.site.register(Match, MatchAdmin)
 admin.site.register(Standing)
+
