@@ -11,6 +11,6 @@ urlpatterns = [
     path('leagues/<int:pk>/', views.LeagueView.as_view(), name = 'team_detail'),
     path('updatescores/', views.ScoreUpdaterView.as_view(), name = 'scoreupdater'),
     path('updatedatetime/', views.DateTimeUpdaterView.as_view(), name = 'dateupdater'),
-    path('updatematches/', views.MatchAdderView.as_view(), name = 'matchupdater'),
+    path('findnewmatches/', views.MatchAdderView.as_view(), name = 'matchupdater'),
     
     ]

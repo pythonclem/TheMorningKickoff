@@ -58,6 +58,8 @@ class Match(models.Model):
     venue = models.CharField(null=True, max_length=255)
     badge = models.CharField(null=True, max_length=255)
     video = models.CharField(null=True, max_length=255)
+    status = models.CharField(null=True, max_length=255)
+    postponed = models.CharField(null=True, max_length=255)
 
     class Meta:
         app_label = 'sportsdb'

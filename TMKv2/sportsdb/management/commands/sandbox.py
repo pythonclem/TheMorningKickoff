@@ -7,6 +7,7 @@ import environ
 from django.db.models import Avg
 from users.models import Profile
 from emails.email_sender import sendEmails
+from django.db import transaction
 
 env = environ.Env()
 environ.Env.read_env("TMKv2\\TMKv2\\.env")
@@ -124,6 +125,106 @@ def generate_html_block(matches_data):
     print("Match information has been saved to match_info.html")
 
 
+import requests
+from django.core.management.base import BaseCommand
+from sportsdb.models import Match, League, Team
+from .get_team import teamData
+import environ
+env = environ.Env()
+environ.Env.read_env("TMKv2\\TMKv2\\.env")
+
+def getMatches(id: int):
+     
+    league_instance = League.objects.get(leagueid=id)
+    season = league_instance.seasonformat
+    print(f"Getting matches for {id}, {season}")
+    response = requests.get(f"https://www.thesportsdb.com/api/v1/json/{env("API_KEY")}/eventsseason.php?id={id}&s={season}")
+    data = response.json()
+    print(f"{len(data.get("events", []))} matches to add")
+    for match in data.get("events", []):
+        try:
+            if Match.objects.get(matchid = match['idEvent']):
+                print(f"{match['strEvent']} already in DB")
+        except:
+            instance = Match(
+            matchid=match['idEvent'],
+            matchteams=match['strEvent'],
+            league=match['strLeague'],
+            matchday=match['intRound'],
+            hometeam=match['strHomeTeam'],
+            awayteam=match['strAwayTeam'],
+            homescore=match['intHomeScore'],
+            awayscore=match['intAwayScore'],
+            season=match['strSeason'],
+            date=match['dateEvent'],
+            time=match['strTime'],
+            venue=match['strVenue'],
+            badge=match['strSquare'],
+            video=match['strVideo'],
+            status=match['strStatus'],
+            postponed=match['strPostponed'],
+            )
+            instance.leagueid = league_instance
+            try:
+                instance.hometeamid = Team.objects.get(teamid = match['idHomeTeam'])
+            except:
+                 problemid = match['idHomeTeam']
+                 teamData(problemid)
+                 instance.hometeamid = Team.objects.get(teamid = match['idHomeTeam'])
+            try:
+                instance.awayteamid = Team.objects.get(teamid = match['idAwayTeam'])
+            except:
+                 problemid = match['idAwayTeam']
+                 teamData(problemid)
+                 instance.awayteamid = Team.objects.get(teamid = match['idAwayTeam'])
+
+            instance.save()
+            print(f"{instance} added to DB")
+    
+
+
+def addStatusPostponed():
+
+    leagues = League.objects.filter(teamdata=True)
+    for league in leagues:
+        try:
+            season = league.seasonformat
+            print(f"Populating S&P {league.leagueid}")
+            response = requests.get(f"https://www.thesportsdb.com/api/v1/json/{env("API_KEY")}/eventsseason.php?id={league.leagueid}&s={season}")
+            data = response.json()
+            matches_to_update = Match.objects.all()
+            bulk_update = []
+            for game in matches_to_update:
+                for match in data.get("events", []):
+                    if str(game.matchid) == match['idEvent']:
+                        game.status = match['strStatus']
+                        game.postponed = match['strPostponed']
+                        bulk_update.append(game)
+                        break
+        except:
+            print(f"{league.leaguename} is a SHIT LEAGUE")
+        if bulk_update:
+            with transaction.atomic():
+                Match.objects.bulk_update(bulk_update, ['status', 'postponed'])
+                print(f"{league.leaguename} succesfully populated S&P")
+
+
+
+
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        sendEmails()
+        addStatusPostponed()
+
+
+
+
+
+
+
+
+
+
+
+
+

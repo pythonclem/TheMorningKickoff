@@ -33,7 +33,9 @@ def getMatches(id: int):
             time=match['strTime'],
             venue=match['strVenue'],
             badge=match['strSquare'],
-            video=match['strVideo']
+            video=match['strVideo'],
+            status=match['strStatus'],
+            postponed=match['strPostponed'],
             )
             instance.leagueid = league_instance
             try:

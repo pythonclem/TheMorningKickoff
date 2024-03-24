@@ -161,9 +161,11 @@ class DateTimeUpdaterView(APIView):
             for game in matches_to_update:
                 for match in data.get("events", []):
                     if str(game.matchid) == match['idEvent']:
-                        if str(game.date) != match['dateEvent'] and str(game.time) != match['strTime']:
+                        if str(game.date) != match['dateEvent'] or str(game.time) != match['strTime']:
                             game.date = match['dateEvent']
                             game.time = match['strTime']
+                            game.status = match['strStatus']
+                            game.postponed = match['strPostponed']
                             scores_to_update.append(game)
                             break
 
