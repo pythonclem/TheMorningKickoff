@@ -19,7 +19,7 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
 
-  debug:
+  cron:
     build: 
       dockerfile: dockerfilecron
 
