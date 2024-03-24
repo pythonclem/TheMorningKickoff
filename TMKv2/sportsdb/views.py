@@ -173,44 +173,47 @@ def getMatches(id: int):
     print(f"Getting matches for {id}, {season}")
     response = requests.get(f"https://www.thesportsdb.com/api/v1/json/{env("API_KEY")}/eventsseason.php?id={id}&s={season}")
     data = response.json()
-    print(f"{len(data.get("events", []))} matches to add")
-    for match in data.get("events", []):
-        try:
-            if Match.objects.get(matchid = match['idEvent']):
-                print(f"{match['strEvent']} already in DB")
-        except:
-            instance = Match(
-            matchid=match['idEvent'],
-            matchteams=match['strEvent'],
-            league=match['strLeague'],
-            matchday=match['intRound'],
-            hometeam=match['strHomeTeam'],
-            awayteam=match['strAwayTeam'],
-            homescore=match['intHomeScore'],
-            awayscore=match['intAwayScore'],
-            season=match['strSeason'],
-            date=match['dateEvent'],
-            time=match['strTime'],
-            venue=match['strVenue'],
-            badge=match['strSquare'],
-            video=match['strVideo']
-            )
-            instance.leagueid = league_instance
+    if data.get("events"):
+        print(f"{len(data.get("events", []))} matches to add")
+        for match in data.get("events", []):
             try:
-                instance.hometeamid = Team.objects.get(teamid = match['idHomeTeam'])
+                if Match.objects.get(matchid = match['idEvent']):
+                    continue
             except:
-                 problemid = match['idHomeTeam']
-                 teamData(problemid)
-                 instance.hometeamid = Team.objects.get(teamid = match['idHomeTeam'])
-            try:
-                instance.awayteamid = Team.objects.get(teamid = match['idAwayTeam'])
-            except:
-                 problemid = match['idAwayTeam']
-                 teamData(problemid)
-                 instance.awayteamid = Team.objects.get(teamid = match['idAwayTeam'])
+                instance = Match(
+                matchid=match['idEvent'],
+                matchteams=match['strEvent'],
+                league=match['strLeague'],
+                matchday=match['intRound'],
+                hometeam=match['strHomeTeam'],
+                awayteam=match['strAwayTeam'],
+                homescore=match['intHomeScore'],
+                awayscore=match['intAwayScore'],
+                season=match['strSeason'],
+                date=match['dateEvent'],
+                time=match['strTime'],
+                venue=match['strVenue'],
+                badge=match['strSquare'],
+                video=match['strVideo']
+                )
+                instance.leagueid = league_instance
+                try:
+                    instance.hometeamid = Team.objects.get(teamid = match['idHomeTeam'])
+                except:
+                    problemid = match['idHomeTeam']
+                    teamData(problemid)
+                    instance.hometeamid = Team.objects.get(teamid = match['idHomeTeam'])
+                try:
+                    instance.awayteamid = Team.objects.get(teamid = match['idAwayTeam'])
+                except:
+                    problemid = match['idAwayTeam']
+                    teamData(problemid)
+                    instance.awayteamid = Team.objects.get(teamid = match['idAwayTeam'])
 
-            instance.save()
-            print(f"{instance} added to DB")
+                instance.save()
+                print(f"{instance} added to DB")
+    print(f"Bad API response for {league_instance}")
+
 
 def getStandings(id: int):
      

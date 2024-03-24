@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from .serializers import UserSerializer, ProfileSerializer, TeamSerializer, MatchSerializer, LeagueSerializer
 from users.models import Profile, User
 from sportsdb.models import Team, Match, League
+from sportsdb.views import getMatches
 from datetime import date
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -138,3 +139,46 @@ class ScoreUpdaterView(APIView):
                     Match.objects.bulk_update(scores_to_update, ['homescore', 'awayscore', 'video'])
                     apiresponse.append(f"Updated {len(scores_to_update)} matches for {league.leaguename}")
         return Response({"message": apiresponse})
+    
+
+
+class DateTimeUpdaterView(APIView):
+
+    def put(self, request, *args, **kwargs):
+            
+        leagues = League.objects.filter(teamdata=True)
+        apiresponse = []
+
+        for league in leagues:
+            season = league.seasonformat
+            print(f"Getting matches for {league.leagueid}, {season}")
+            response = requests.get(f"https://www.thesportsdb.com/api/v1/json/{env("API_KEY")}/eventsseason.php?id={league.leagueid}&s={season}")
+            data = response.json()
+            matches_to_update = Match.objects.filter(leagueid=league, date__gt=now(), homescore__isnull=True)
+            print(f"Found {matches_to_update.count()} matches to update")
+            scores_to_update = []
+
+            for game in matches_to_update:
+                for match in data.get("events", []):
+                    if str(game.matchid) == match['idEvent']:
+                        if str(game.date) != match['dateEvent'] and str(game.time) != match['strTime']:
+                            game.date = match['dateEvent']
+                            game.time = match['strTime']
+                            scores_to_update.append(game)
+                            break
+
+            if scores_to_update:
+                with transaction.atomic():
+                    Match.objects.bulk_update(scores_to_update, ['date', 'time'])
+                    apiresponse.append(f"Updated {len(scores_to_update)} matches for {league.leaguename}")
+        return Response({"message": apiresponse})
+    
+
+class MatchAdderView(APIView):
+
+    def post(self, request, *args, **kwargs):
+            
+        leagues = League.objects.filter(teamdata=True)
+        for league in leagues:
+            getMatches(league.leagueid)
+        return Response({"message": "Matches Updated"})
