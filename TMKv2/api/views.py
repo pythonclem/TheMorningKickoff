@@ -10,11 +10,12 @@ from datetime import date
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 import requests
+import logging
 from django.utils.timezone import now
 import environ
 env = environ.Env()
 environ.Env.read_env("TMKv2\\TMKv2\\.env")
-
+logger = logging.getLogger('application_log')
 
 class UserView(APIView):
 
@@ -138,6 +139,7 @@ class ScoreUpdaterView(APIView):
                 with transaction.atomic():
                     Match.objects.bulk_update(scores_to_update, ['homescore', 'awayscore', 'video'])
                     apiresponse.append(f"Updated {len(scores_to_update)} matches for {league.leaguename}")
+        logger.info('Score Updater has finished updating matches.')
         return Response({"message": apiresponse})
     
 
@@ -173,6 +175,7 @@ class DateTimeUpdaterView(APIView):
                 with transaction.atomic():
                     Match.objects.bulk_update(scores_to_update, ['date', 'time'])
                     apiresponse.append(f"Updated {len(scores_to_update)} matches for {league.leaguename}")
+        logger.info('Date Time Updater has finished updating matches.')
         return Response({"message": apiresponse})
     
 
@@ -183,4 +186,6 @@ class MatchAdderView(APIView):
         leagues = League.objects.filter(teamdata=True)
         for league in leagues:
             getMatches(league.leagueid)
+
+        logger.info('Match Adder has finished updating matches.')
         return Response({"message": "Matches Updated"})

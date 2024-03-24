@@ -144,14 +144,17 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'application.log',
         },
     },
     'loggers': {
-        'sportsdb': {
-            'handlers': ['console'],
+        'application_log': {
+            'handlers': ['file'],
             'level': 'INFO',
+            'propagate': True,
         },
     },
 }
