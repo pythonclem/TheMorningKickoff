@@ -4,8 +4,6 @@ from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-# Create your views here.
-
 def loginUser(request):
 
     if request.user.is_authenticated:

@@ -148,6 +148,13 @@ LOGGING = {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': 'application.log',
+            'formatter': 'detailed',
+        },
+    },
+    'formatters': {
+        'detailed': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
         },
     },
     'loggers': {

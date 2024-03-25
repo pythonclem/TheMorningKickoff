@@ -174,7 +174,6 @@ def getMatches(id: int):
     response = requests.get(f"https://www.thesportsdb.com/api/v1/json/{env("API_KEY")}/eventsseason.php?id={id}&s={season}")
     data = response.json()
     if data.get("events"):
-        print(f"{len(data.get("events", []))} matches to add")
         for match in data.get("events", []):
             try:
                 if Match.objects.get(matchid = match['idEvent']):
@@ -212,7 +211,6 @@ def getMatches(id: int):
 
                 instance.save()
                 print(f"{instance} added to DB")
-    print(f"Bad API response for {league_instance}")
 
 
 def getStandings(id: int):
