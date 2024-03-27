@@ -157,7 +157,6 @@ class DateTimeUpdaterView(APIView):
             response = requests.get(f"https://www.thesportsdb.com/api/v1/json/{env("API_KEY")}/eventsseason.php?id={league.leagueid}&s={season}")
             data = response.json()
             matches_to_update = Match.objects.filter(leagueid=league, date__gt=now(), homescore__isnull=True)
-            print(f"Found {matches_to_update.count()} matches to update")
             scores_to_update = []
 
             for game in matches_to_update:
